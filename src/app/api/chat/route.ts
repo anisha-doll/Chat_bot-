@@ -18,17 +18,17 @@ export async function POST(req: Request) {
 
     const completion = await groq.chat.completions.create({
       messages: messages,
-      model: 'llama-3.1-8b-instant',
+      model: 'openai/gpt-oss-20b',
     });
 
     const reply = completion.choices[0]?.message?.content || '';
 
     return NextResponse.json({ reply });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Groq API Error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal Server Error' },
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error ? error.message : 'Internal Server Error';
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
